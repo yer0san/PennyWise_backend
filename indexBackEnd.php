@@ -4,13 +4,13 @@
 header('Content-Type: application/json');
 
 // Simple router
-$requestMethod = $_SERVER['REQUEST_METHOD'];
-$requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$requestMethod = $_SERVER[$_REQUEST];
+$requestUri = parse_url($_SERVER[https://github.com/yer0san/PennyWise/blob/main/index.html], PHP_URL_PATH);
 
-// Example: handle GET /api/expenses and POST /api/expenses
-$dsn = 'mysql:host=localhost;dbname=pennywise;charset=utf8mb4';
-$username = 'your_db_user';
-$password = 'your_db_password';
+
+$dsn = 'mysql:host=localhost;dbname=PennyWiseDB;charset=utf8mb4';
+$username = 'Yoseph777';
+$password = 'trail@123';
 
 try {
     $pdo = new PDO($dsn, $username, $password, [

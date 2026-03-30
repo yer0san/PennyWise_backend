@@ -1,4 +1,3 @@
-
 -- USERS
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -64,3 +63,34 @@ CREATE TABLE income (
     FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE,
     FOREIGN KEY (category_id) REFERENCES income_categories(id) ON DELETE CASCADE
 );
+CREATE TABLE records (
+    id VARCHAR(36) PRIMARY KEY,
+    user_id VARCHAR(36) NOT NULL,
+    type ENUM('income', 'expense', 'transfer') NOT NULL,
+    amount DECIMAL(15, 2) NOT NULL,
+    category_id VARCHAR(36) NULL,
+    from_account_id VARCHAR(36) NULL,
+    to_account_id VARCHAR(36) NULL,
+    description VARCHAR(255) NULL,
+    date DATE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL,
+    FOREIGN KEY (from_account_id) REFERENCES accounts(id) ON DELETE SET NULL,
+    FOREIGN KEY (to_account_id) REFERENCES accounts(id) ON DELETE SET NULL,
+    INDEX idx_user_records (user_id),
+    INDEX idx_record_date (date),
+    INDEX idx_record_type (type)
+) ENGINE=InnoDB;
+
+CREATE OR REPLACE VIEW monthly_summary AS
+SELECT 
+    user_id,
+    YEAR(date) as year,
+    MONTH(date) as month,
+    SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END) as total_income,
+    SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END) as total_expense,
+    SUM(CASE WHEN type = 'income' THEN amount ELSE -amount END) as net_amount
+FROM records
+GROUP BY user_id, YEAR(date), MONTH(date);

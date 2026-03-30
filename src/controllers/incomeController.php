@@ -68,3 +68,4 @@ function updateIncome($id) {
 
     json(['message' => 'Income updated']);
 }
+?>

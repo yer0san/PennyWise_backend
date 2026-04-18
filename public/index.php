@@ -1,5 +1,5 @@
 <?php
-
+require_once __DIR__ . '/../src/utils.php';
 require_once __DIR__ . '/../src/controllers/expenseController.php';
 require_once __DIR__ . '/../src/controllers/incomeController.php';
 require_once __DIR__ . '/../src/controllers/transferController.php';

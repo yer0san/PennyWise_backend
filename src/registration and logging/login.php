@@ -1,7 +1,7 @@
 <?php
     session_start();
-    require_once "db.php";
-    require_once "utils.php";
+    require_once(__DIR__ . "/../core/db.php");
+    require_once(__DIR__ . "/../utils.php");
     //Get Input
     $data = getJsonInput();
     $username = $_POST['username'];

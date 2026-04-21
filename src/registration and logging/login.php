@@ -1,25 +1,36 @@
 <?php
     session_start();
-    include "db.php";
-
+    require_once "db.php";
+    require_once "utils.php";
+    //Get Input
+    $data = getJsonInput();
     $username = $_POST['username'];
     $password = $_POST['password'];
-
-    $sql = "SELECT * FROM users WHERE username='$username'";
-    $result = $conn->query($sql);
-
-    if ($result->num_rows > 0) {
-        $row = $result->fetch_assoc();
-
-        if (password_verify($password, $row['password'])) {
-            $_SESSION['username'] = $username;
-            header("Location: index.html");
-        } else {
-            echo "Wrong password!";
-        }
-    } else {
-        echo "User not found!";
+    //Validation
+    if (isEmpty($username) || isEmpty($password)) {
+    json([
+        "status" => "error",
+        "message" => "All fields are required"
+    ], 400);
     }
-
-    $conn->close();
-?>
+    //DB Check
+    $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    //User Check
+    if ($result->num_rows === 0) {
+    json([
+        "status" => "error",
+        "message" => "User not found"
+    ], 404);
+    }
+    $user = $result->fetch_assoc();
+    //Password Check
+    if (!password_verify($password, $user['password'])) {
+    json([
+        "status" => "error",
+        "message" => "Wrong password"
+    ], 401);
+    }
+    

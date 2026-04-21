@@ -38,6 +38,9 @@ CREATE TABLE transfer_categories (
     name VARCHAR(100) NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+
+
 CREATE TABLE records (
     id VARCHAR(36) PRIMARY KEY,
     user_id VARCHAR(36) NOT NULL,
@@ -86,17 +89,16 @@ CREATE TABLE expenses (
     FOREIGN KEY (category_id) REFERENCES expense_categories(id) ON DELETE CASCADE
 );
 
--- INCOME (money coming in)
-
-CREATE TABLE income (
+-- BUDGETS (monthly spending caps)
+CREATE TABLE budgets (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
-    account_id INT NOT NULL,
-    category_id INT NOT NULL,
-    amount DECIMAL(10,2) NOT NULL,
-    date DATE NOT NULL,
+    year SMALLINT UNSIGNED NOT NULL,
+    month TINYINT UNSIGNED NOT NULL,
+    expense_category_id INT NULL,
+    category_key INT NOT NULL,
+    amount_limit DECIMAL(10,2) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE,
     FOREIGN KEY (category_id) REFERENCES income_categories(id) ON DELETE CASCADE

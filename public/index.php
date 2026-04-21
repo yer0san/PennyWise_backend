@@ -46,6 +46,11 @@ if (preg_match('#^/income/(\d+)$#', $uri, $matches) && $method === 'DELETE') {
     deleteIncome($matches[1]);
     exit;
 }
+if (preg_match('#^/income/(\d+)$#', $uri, $matches) && 
+    ($method === 'PUT' || $method === 'PATCH')) {
+    updateIncome($matches[1]);
+    exit;
+}
 
 if (preg_match('#^/expenses/(\d+)$#', $uri, $matches) && 
     ($method === 'PUT' || $method === 'PATCH')) {

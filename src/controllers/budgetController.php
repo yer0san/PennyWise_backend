@@ -104,7 +104,7 @@ function createBudget() {
     try {
         $stmt = db()->prepare("
             INSERT INTO budgets (user_id, year, month, expense_category_id, category_key, amount_limit)
-            VALUES (?, ?, ?, ?, ?, ?)
+            VALUES (1, ?, ?, ?, ?, ?)
         ");
         $stmt->execute([
             BUDGET_USER_ID,

@@ -117,6 +117,38 @@ if (preg_match('#^/budgets/(\d+)$#', $uri, $matches) &&
     exit;
 }
 
+// SAVINGS GOAL ROUTES
+if ($uri === '/goals' && $method === 'GET') {
+    getSavingsGoals();
+    exit;
+}
+
+if ($uri === '/goals' && $method === 'POST') {
+    createSavingsGoal();
+    exit;
+}
+
+if (preg_match('#^/goals/(\d+)$#', $uri, $matches) && $method === 'DELETE') {
+    deleteSavingsGoal($matches[1]);
+    exit;
+}
+
+if (preg_match('#^/goals/(\d+)$#', $uri, $matches) &&
+    ($method === 'PUT' || $method === 'PATCH')) {
+    updateSavingsGoal($matches[1]);
+    exit;
+}
+
+if (preg_match('#^/goals/(\d+)/contributions$#', $uri, $matches) && $method === 'GET') {
+    getGoalContributions($matches[1]);
+    exit;
+}
+
+if (preg_match('#^/goals/(\d+)/contributions$#', $uri, $matches) && $method === 'POST') {
+    createGoalContribution($matches[1]);
+    exit;
+}
+
 // FALLBACK
 http_response_code(404);
 echo json_encode(['error' => 'Not Found']);

@@ -5,7 +5,7 @@ require_once __DIR__ . '/../utils.php';
 
 function getTransfers() {
     $stmt = db()->query("SELECT * FROM transfers ORDER BY date DESC");
-    json($stmt->fetchAll());
+    json($stmt->fetchAll(PDO::FETCH_ASSOC));
 }
 
 function createTransfer() {

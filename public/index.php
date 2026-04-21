@@ -4,6 +4,7 @@ require_once __DIR__ . '/../src/controllers/expenseController.php';
 require_once __DIR__ . '/../src/controllers/incomeController.php';
 require_once __DIR__ . '/../src/controllers/transferController.php';
 require_once __DIR__ . '/../src/controllers/debtController.php';
+require_once __DIR__ . '/../src/controllers/budgetController.php';
 
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];

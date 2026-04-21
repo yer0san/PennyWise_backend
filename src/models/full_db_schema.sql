@@ -94,3 +94,31 @@ CREATE TABLE income (
     FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE,
     FOREIGN KEY (category_id) REFERENCES income_categories(id) ON DELETE CASCADE
 );
+
+-- DEBTS (money owed / loans)
+CREATE TABLE debts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    creditor_name VARCHAR(255) NOT NULL,
+    total_amount DECIMAL(10,2) NOT NULL,
+    remaining_amount DECIMAL(10,2) NOT NULL,
+    due_date DATE NULL,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+-- BUDGETS (monthly spending caps; category_key 0 = all categories for that month)
+CREATE TABLE budgets (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    year SMALLINT UNSIGNED NOT NULL,
+    month TINYINT UNSIGNED NOT NULL,
+    expense_category_id INT NULL,
+    category_key INT NOT NULL COMMENT '0 = whole month total; else same as expense_category_id',
+    amount_limit DECIMAL(10,2) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (expense_category_id) REFERENCES expense_categories(id) ON DELETE CASCADE,
+    UNIQUE KEY uq_budget_period (user_id, year, month, category_key)
+);
+

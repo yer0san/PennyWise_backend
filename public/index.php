@@ -3,6 +3,7 @@ require_once __DIR__ . '/../src/utils.php';
 require_once __DIR__ . '/../src/controllers/expenseController.php';
 require_once __DIR__ . '/../src/controllers/incomeController.php';
 require_once __DIR__ . '/../src/controllers/transferController.php';
+require_once __DIR__ . '/../src/controllers/debtController.php';
 
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
@@ -50,6 +51,29 @@ if (preg_match('#^/expenses/(\d+)$#', $uri, $matches) &&
     updateExpense($matches[1]);
     exit;
 }
+
+// DEBT ROUTES
+if ($uri === '/debts' && $method === 'GET') {
+    getDebts();
+    exit;
+}
+
+if ($uri === '/debts' && $method === 'POST') {
+    createDebt();
+    exit;
+}
+
+if (preg_match('#^/debts/(\d+)$#', $uri, $matches) && $method === 'DELETE') {
+    deleteDebt($matches[1]);
+    exit;
+}
+
+if (preg_match('#^/debts/(\d+)$#', $uri, $matches) &&
+    ($method === 'PUT' || $method === 'PATCH')) {
+    updateDebt($matches[1]);
+    exit;
+}
+
 // TRANSFER ROUTES
 if ($uri === '/transfers' && $method === 'GET') {
     getTransfers();

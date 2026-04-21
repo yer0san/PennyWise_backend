@@ -95,7 +95,27 @@ if (preg_match('#^/transfers/(\d+)$#', $uri, $matches) &&
     updateTransfer($matches[1]);
     exit;
 }   
+// BUDGET ROUTES
+if ($uri === '/budgets' && $method === 'GET') {
+    getBudgets();
+    exit;
+}
 
+if ($uri === '/budgets' && $method === 'POST') {
+    createBudget();
+    exit;
+}
+
+if (preg_match('#^/budgets/(\d+)$#', $uri, $matches) && $method === 'DELETE') {
+    deleteBudget($matches[1]);
+    exit;
+}
+
+if (preg_match('#^/budgets/(\d+)$#', $uri, $matches) &&
+    ($method === 'PUT' || $method === 'PATCH')) {
+    updateBudget($matches[1]);
+    exit;
+}
 
 // FALLBACK
 http_response_code(404);

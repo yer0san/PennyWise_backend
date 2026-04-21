@@ -1,6 +1,6 @@
 <?php
-    require_once "db.php";
-    require_once "utils.php";
+    require_once(__DIR__ . "/../core/db.php");
+    require_once(__DIR__ . "/../utils.php");
     //Det Input
     $data = getJsonInput();
     $username = sanitize($data['username'] ?? '');

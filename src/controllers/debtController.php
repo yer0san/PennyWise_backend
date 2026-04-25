@@ -19,7 +19,8 @@ function normalizeDebtName($value, string $fieldName): string {
     if ($value === '') {
         json(['error' => "$fieldName cannot be empty"], 400);
     }
-    if (mb_strlen($value) > 255) {
+    $length = function_exists('mb_strlen') ? mb_strlen($value) : strlen($value);
+    if ($length > 255) {
         json(['error' => "$fieldName is too long"], 400);
     }
     return $value;

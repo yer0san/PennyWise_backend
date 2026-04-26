@@ -23,4 +23,13 @@
 - **GET /income** → fetch all income  
 - **POST /income** → create income  
 - **PATCH /income/{id}** → update income  
-- **DELETE /income/{id}** → delete income  
+- **DELETE /income/{id}** → delete income
+
+---
+
+### Transfer
+
+- **GET /transfer** → fetch all tranfers
+- **POST /tranfer** → create tranfer  
+- **PATCH /tranfer/{id}** → update tranfer  
+- **DELETE /tranfer/{id}** → delete tranfer

@@ -5,6 +5,8 @@ require_once __DIR__ . '/../src/controllers/incomeController.php';
 require_once __DIR__ . '/../src/controllers/transferController.php';
 require_once __DIR__ . '/../src/controllers/debtController.php';
 require_once __DIR__ . '/../src/controllers/budgetController.php';
+require_once __DIR__ . '/../src/controllers/savingsGoalController.php';
+require_once __DIR__ . '/../src/controllers/recordsController.php';
 
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
@@ -154,6 +156,13 @@ if (preg_match('#^/goals/(\d+)/contributions$#', $uri, $matches) && $method === 
     createGoalContribution($matches[1]);
     exit;
 }
+
+// RECORDS ROUTE
+if ($uri === '/records' && $method === 'GET') {
+    getAllRecords();
+    exit;
+}
+
 
 // FALLBACK
 http_response_code(404);

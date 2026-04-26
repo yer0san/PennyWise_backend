@@ -89,6 +89,24 @@ CREATE TABLE expenses (
     FOREIGN KEY (category_id) REFERENCES expense_categories(id) ON DELETE CASCADE
 );
 
+-- TRANSFERS (moving money between accounts)
+CREATE TABLE transfers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    from_account_id INT NOT NULL,
+    to_account_id INT NOT NULL,
+    category_id INT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    description TEXT,
+    date DATE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (from_account_id) REFERENCES accounts(id) ON DELETE CASCADE,
+    FOREIGN KEY (to_account_id) REFERENCES accounts(id) ON DELETE CASCADE,
+    FOREIGN KEY (category_id) REFERENCES transfer_categories(id) ON DELETE SET NULL
+);
+
 -- BUDGETS (monthly spending caps)
 CREATE TABLE budgets (
     id INT AUTO_INCREMENT PRIMARY KEY,

@@ -3,14 +3,21 @@
 //JSON Response
 function json($data, $status = 200) {
     http_response_code($status);
-    header("Content-Type: application/json");
-    echo json_encode($data);
+    header("Content-Type: application/json;charset=utf-8");
+    echo json_encode($data,JSON_UNESCAPED_UNICODE);
     exit;
 }
 //Get JSON Input
 function getJsonInput() {
-    return json_decode(file_get_contents('php://input'), true);
-}
+     $data = json_decode(file_get_contents('php://input'), true);
+     if (json_last_error() !== JSON_ERROR_NONE) {
+             json([
+                 "status" => "error",
+                 "message" => "Invalid JSON input"
+             ], 400);
+         }
+     
+    return $data ?? [];}
 
 //Sanitization
 function sanitize($data) {
@@ -32,7 +39,8 @@ function validateEmail($email) {
 
 //Password Validation
 function validatePassword($password) {
-    return strlen($password) >= 6;
+    return strlen($password) >= 6 && preg_match('/[A-Z]/', $password) &&
+           preg_match('/[0-9]/', $password); ;
 }
 
 //Ampunt Validation
@@ -44,4 +52,20 @@ function validateAmount($amount) {
 function validateText($text, $min = 2, $max = 255) {
     $length = strlen(trim($text));
     return $length >= $min && $length <= $max;
+}
+function requireAuth() {
+    session_start();
+
+    if (!isset($_SESSION['user_id'])) {
+        json([
+            "status" => "error",
+            "message" => "Unauthorized"
+        ], 401);
+    }
+}
+function currentUser() {
+    return [
+        "id" => $_SESSION['user_id'] ?? null,
+        "username" => $_SESSION['username'] ?? null
+    ];
 }

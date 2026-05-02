@@ -1,11 +1,16 @@
 <?php
     require_once(__DIR__ . "/../core/db.php");
     require_once(__DIR__ . "/../utils.php");
+    require_once(__DIR__ . "/../controllers/mailService.php");
+
+
     //Det Input
     $data = getJsonInput();
     $username = sanitize($data['username'] ?? '');
     $email = sanitize($data['email'] ?? '');
     $password = $data['password'] ?? '';
+    $conn = getDB();
+    $token = bin2hex(random_bytes(32));
     //Validation
     if (isEmpty($username) || isEmpty($email) || isEmpty($password)) {
         json([
@@ -28,15 +33,14 @@
     if (!validatePassword($password)) {
          json([
             "status" => "error",
-            "message" => "Password must be at least 6 characters"
+            "message" => "Password must be at least 6 characters and a combination of alphabets and numbers"
         ], 400);
     }
     //Check if duplicated user exixts
     $stmt = $conn->prepare("SELECT id FROM users WHERE username = ? OR email = ?");
-    $stmt->bind_param("ss", $username, $email);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    if ($result->num_rows > 0) {
+    $stmt->execute([$username, $email]);
+    $result = $stmt->fetch();
+    if ($result) {
         json([
             "status" => "error",
             "message" => "Username or email already exists"
@@ -44,17 +48,30 @@
     }
     //Insert
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-    $stmt = $conn->prepare("INSERT INTO users (username, password, email) VALUES (?, ?, ?)");
-    $stmt->bind_param("sss", $username, $hashedPassword, $email);
+    $stmt = $conn->prepare("INSERT INTO users (username, password_hash, email, verification_token) VALUES (?, ?, ?, ?)");
+    $emailSent = true;
+    if ($stmt->execute([$username, $hashedPassword, $email, $token])) {
+       
+    try {
+            sendVerificationEmail($email, $token);
+        } catch (Exception $e) {
+            $emailSent=false;
+            error_log('Verification email failed: ' . $e->getMessage());
+            json([
+                "status" => "success",
+                "message" => "User registered successfully, but verification email could not be sent",
+            ], 201);
+        }
 
-    if ($stmt->execute()) {
-         json([
-             "status" => "success",
-             "message" => "User registered successfully"
+        json([
+            "status" => "success",
+            "message" => "User registered successfully",
+            "email_sent" => $emailSent
         ], 201);
+
     } else {
         json([
             "status" => "error",
-            "message" => "Registration failed"
+            "message" => "Registration failed,Server error"
         ], 500);
     }

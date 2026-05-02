@@ -1,7 +1,7 @@
 
 # For the mailing service to work u have to follow the installation guide
 
-# 1. *Install Composer*
+# 1. **Install Composer**
 
 ## Download Composer
 
@@ -10,7 +10,7 @@ https://getcomposer.org/download/
 
 
 
-## 2. Install PHPMailer
+# 2. Install PHPMailer
 
 ##  Go to your project folder
 
@@ -18,12 +18,12 @@ https://getcomposer.org/download/
 example cd PennyWise_backend
 ```
 
-## 3. Google Setup for PHPMailer (Gmail SMTP)
+# 3. Google Setup for PHPMailer (Gmail SMTP)
 Enable 2-Step Verification
 
 You must enable 2-Step Verification first.
 
-A . *Go to:*
+A . **Go to:**
 https://myaccount.google.com/security
 
 - Scroll to **"Signing in to Google"**
@@ -31,7 +31,7 @@ https://myaccount.google.com/security
 
 ---
 
- B . *Create App Password*
+ B . **Create App Password**
 
 After enabling 2-Step Verification:
 
@@ -46,7 +46,7 @@ https://myaccount.google.com/apppasswords
 Click **Generate**
 
 
-*C. Copy the Password*
+**C. Copy the Password**
 
 Google will generate a **16-character password** like:
 sdda asaf hjeb jyte (use it without the spacing)

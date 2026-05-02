@@ -1,7 +1,7 @@
 
 # For the mailing service to work u have to follow the installation guide
 
-#1. *Install Composer*
+# 1. *Install Composer*
 
 ## Download Composer
 

@@ -11,6 +11,7 @@
     $password = $data['password'] ?? '';
     $conn = getDB();
     $token = bin2hex(random_bytes(32));
+
     //Validation
     if (isEmpty($username) || isEmpty($email) || isEmpty($password)) {
         json([
@@ -21,7 +22,7 @@
     if (!validateText($username, 3, 50)) {
         json([
              "status" => "error",
-             "message" => "Username must be 3–50 characters"
+             "message" => "Username must be 3-50 characters"
         ], 400);
     }
     if (!validateEmail($email)) {
@@ -52,22 +53,22 @@
     $emailSent = true;
     if ($stmt->execute([$username, $hashedPassword, $email, $token])) {
        
-    try {
-            sendVerificationEmail($email, $token);
-        } catch (Exception $e) {
-            $emailSent=false;
-            error_log('Verification email failed: ' . $e->getMessage());
+        try {
+                sendVerificationEmail($email, $token);
+            } catch (Exception $e) {
+                $emailSent=false;
+                error_log('Verification email failed: ' . $e->getMessage());
+                json([
+                    "status" => "success",
+                    "message" => "User registered successfully, but verification email could not be sent",
+                ], 201);
+            }
+
             json([
                 "status" => "success",
-                "message" => "User registered successfully, but verification email could not be sent",
+                "message" => "User registered successfully",
+                "email_sent" => $emailSent
             ], 201);
-        }
-
-        json([
-            "status" => "success",
-            "message" => "User registered successfully",
-            "email_sent" => $emailSent
-        ], 201);
 
     } else {
         json([

@@ -1,34 +1,62 @@
 <?php
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../src/utils.php';
 require_once __DIR__ . '/../src/controllers/expenseController.php';
 require_once __DIR__ . '/../src/controllers/incomeController.php';
 require_once __DIR__ . '/../src/controllers/transferController.php';
 require_once __DIR__ . '/../src/controllers/debtController.php';
+
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load();
-$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+// ── CORS ─────────────────────────────────────────────────────
+// Allow requests from the frontend (Live Server)
+$allowedOrigins = ['http://localhost:5500', 'http://127.0.0.1:5500'];
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+
+if (in_array($origin, $allowedOrigins)) {
+    header("Access-Control-Allow-Origin: $origin");
+}
+header('Access-Control-Allow-Credentials: true');
+header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(204);
+    exit;
+}
+
+$uri    = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
 
+// AUTH ROUTES
 if ($uri === '/login' && $method === 'POST') {
     require __DIR__ . '/../src/registrationAndLogging/login.php';
     exit;
 }
-// Register
+
 if ($uri === '/register' && $method === 'POST') {
     require __DIR__ . '/../src/registrationAndLogging/register.php';
     exit;
 }
 
-// LOGOUT
-if ($uri === '/logout' && $method === 'GET') {
+// Changed from GET to POST — GET-based logout is vulnerable to CSRF
+if ($uri === '/logout' && $method === 'POST') {
     require __DIR__ . '/../src/registrationAndLogging/logout.php';
     exit;
 }
 
-// EMAIL VERIFICATION
 if ($uri === '/verify' && $method === 'GET') {
     require __DIR__ . '/../src/registrationAndLogging/verify.php';
+    exit;
+}
+
+// Lightweight session check — called by the frontend on every protected page load
+if ($uri === '/check-auth' && $method === 'GET') {
+    require __DIR__ . '/../src/registrationAndLogging/check_auth.php';
     exit;
 }
 
@@ -51,7 +79,7 @@ if (preg_match('#^/expenses/(\d+)$#', $uri, $matches) && $method === 'DELETE') {
     exit;
 }
 
-if (preg_match('#^/expenses/(\d+)$#', $uri, $matches) && 
+if (preg_match('#^/expenses/(\d+)$#', $uri, $matches) &&
     ($method === 'PUT' || $method === 'PATCH')) {
     requireAuth();
     updateExpense($matches[1]);
@@ -77,7 +105,7 @@ if (preg_match('#^/income/(\d+)$#', $uri, $matches) && $method === 'DELETE') {
     exit;
 }
 
-if (preg_match('#^/income/(\d+)$#', $uri, $matches) && 
+if (preg_match('#^/income/(\d+)$#', $uri, $matches) &&
     ($method === 'PUT' || $method === 'PATCH')) {
     requireAuth();
     updateIncome($matches[1]);
@@ -129,12 +157,13 @@ if (preg_match('#^/transfers/(\d+)$#', $uri, $matches) && $method === 'DELETE') 
     exit;
 }
 
-if (preg_match('#^/transfers/(\d+)$#', $uri, $matches) && 
+if (preg_match('#^/transfers/(\d+)$#', $uri, $matches) &&
     ($method === 'PUT' || $method === 'PATCH')) {
     requireAuth();
     updateTransfer($matches[1]);
     exit;
-}   
+}
+
 // BUDGET ROUTES
 if ($uri === '/budgets' && $method === 'GET') {
     requireAuth();

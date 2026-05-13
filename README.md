@@ -7,29 +7,108 @@
 | Yidnekachew Zerihun   | ETS1455/16 | ofx-yd |
 | Yonas Begashaw  | ETS1494/16 | yonas189 |
 
-## API Endpoints
+# PennyWise — Backend API
 
-### Expenses
+PHP REST API for PennyWise. Uses nginx + PHP-FPM, MariaDB (or XAMPP instead) and PHPMailer for email verification.
 
-- **GET /expenses** → fetch all expenses  
-- **POST /expenses** → create expense  
-- **PATCH /expenses/{id}** → update expense  
-- **DELETE /expenses/{id}** → delete expense  
+## Project structure
 
----
+```
+pennywise_api/
+├── .env                     
+├── .env.example              
+├── composer.json
+├── vendor/
+├── public/
+│   └── index.php                 ← router
+└── src/
+    ├── utils.php                 ← shared helpers (json, validation, auth guard)
+    ├── core/
+    │   └── db.php                ← database connection
+    ├── registrationAndLogging/
+    │   ├── login.php
+    │   ├── register.php
+    │   ├── logout.php
+    │   ├── verify.php
+    │   └── check_auth.php
+    └── controllers/
+        ├── mailService.php
+        ├── expenseController.php
+        ├── incomeController.php
+        ├── transferController.php
+        └── debtController.php
+```
 
-### Income
+## Requirements
 
-- **GET /income** → fetch all income  
-- **POST /income** → create income  
-- **PATCH /income/{id}** → update income  
-- **DELETE /income/{id}** → delete income
+- PHP 8.x
+- nginx + php-fpm (or XAMPP)
+- MariaDB
+- Composer
 
----
+## Setup
 
-### Transfer
+**1. Clone the repo and install dependencies:**
+```bash
+composer install
+```
 
-- **GET /transfer** → fetch all tranfers
-- **POST /tranfer** → create tranfer  
-- **PATCH /tranfer/{id}** → update tranfer  
-- **DELETE /tranfer/{id}** → delete tranfer
+**2. Create your `.env` file:**
+```bash
+cp .env.example .env
+```
+
+Then fill in your values:
+```dotenv
+DB_HOST=127.0.0.1
+DB_NAME=your_db_name
+DB_USER=your_db_user
+DB_PASS=your_db_password
+DB_CHARSET=utf8mb4
+
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=your_email@gmail.com
+MAIL_PASSWORD=your_google_app_password
+MAIL_ENCRYPTION=tls
+MAIL_FROM=your_email@gmail.com
+MAIL_FROM_NAME="PennyWise"
+```
+
+**3. Create the database and run the schema (example with mariadb):**
+```bash
+mariadb -u root -p your_db_name < full_db_schema.sql
+```
+
+**4. Start nginx and php-fpm (or XAMPP) example for nginx adn php-fpm below:**
+```bash
+sudo systemctl start nginx
+sudo systemctl start php-fpm
+```
+
+The API will be available at `http://localhost`.
+
+## Auth endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/register` | Create a new account |
+| POST | `/login` | Sign in |
+| POST | `/logout` | Sign out |
+| GET | `/verify?token=...` | Verify email address |
+| GET | `/check-auth` | Check if session is valid |
+
+## Email verification
+
+Registration sends a verification email via Gmail SMTP. The `MAIL_PASSWORD` is a **Google App Password**, not your regular Gmail password.
+
+To generate one: Google Account → Security → 2-Step Verification → App Passwords.
+
+## CORS
+
+The API allows requests from the frontend origins:
+- `http://localhost:5500`
+- `http://127.0.0.1:5500`
+
+To allow a different origin, update the `$allowedOrigins` array at the top of `public/index.php`.
+

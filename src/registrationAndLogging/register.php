@@ -56,12 +56,13 @@
         try {
                 sendVerificationEmail($email, $token);
             } catch (Exception $e) {
-                $emailSent=false;
+                $emailSent = false;
                 error_log('Verification email failed: ' . $e->getMessage());
+                // TEMP: expose error for debugging
                 json([
-                    "status" => "success",
-                    "message" => "User registered successfully, but verification email could not be sent",
-                ], 201);
+                    "status" => "error",
+                    "message" => $e->getMessage()
+                ], 500);
             }
 
             json([
